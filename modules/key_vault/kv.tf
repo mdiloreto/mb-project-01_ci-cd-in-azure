@@ -5,14 +5,14 @@ resource "random_integer" "ri" {
 # Create Resource Group (you need to use the create_rg cara)
 resource "azurerm_resource_group" "rg" {
   count    = var.create_rg ? 1 : 0  # Create RG if var.create_rg is true
-  name     = "${var.rg_name}${random_interger.ri.result}"
+  name     = "${var.rg_name}${random_integer.ri.result}"
   location = var.location
 }
 
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "main" {
-  name                        = "${var.name}${random_interger.ri.result}"
+  name                        = "${var.name}${random_integer.ri.result}"
   location                    = azurerm_resource_group.rg.location
   resource_group_name         = azurerm_resource_group.rg.name
   enabled_for_disk_encryption = true

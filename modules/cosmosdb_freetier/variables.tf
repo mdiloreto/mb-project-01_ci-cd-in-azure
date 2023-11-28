@@ -36,7 +36,7 @@ variable "max_throughput" {
   }
 }
 variable "sql_container_name" {
-  
+  default = "cosmosdbsqlcontainer"
 }
 
 variable "create_rg" {
@@ -47,6 +47,7 @@ variable "create_rg" {
 
 variable "rg_name" {
   description = "Variable for Resource Name."
+  default = "WebApp_rg"
 }
 
 variable "location" {
@@ -56,4 +57,5 @@ variable "location" {
 
 variable "name" {
   description = "Variable for the WebApp name."
+  default = "madsblogwebapp01"
 }

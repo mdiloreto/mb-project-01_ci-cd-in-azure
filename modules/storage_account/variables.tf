@@ -1,7 +1,6 @@
 variable "container_access_type" {
-  
+  default = "container"
 }
-
 variable "create_rg" {
   description = "Variable to decide if its necesary to create RG."
   type = bool
@@ -10,6 +9,7 @@ variable "create_rg" {
 
 variable "rg_name" {
   description = "Variable for Resource Name."
+  default = "mb-storageaccount"
 }
 
 variable "location" {

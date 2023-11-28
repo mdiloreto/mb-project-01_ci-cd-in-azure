@@ -1,0 +1,6 @@
+webapp_name = "mb-webapp"
+rg_name = "cicd-demo_rg"
+location = "eastus"
+sa_name = "mbwebappsa"
+acr_name = "acrwebapp"
+role_assing_role = "Contributor"

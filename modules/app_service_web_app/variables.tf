@@ -6,6 +6,7 @@ variable "create_rg" {
 
 variable "rg_name" {
   description = "Variable for Resource Name."
+  default = "madsblog_rg"
 }
 
 variable "location" {
@@ -15,4 +16,13 @@ variable "location" {
 
 variable "webapp_name" {
   description = "Variable for the WebApp name."
+}
+
+variable "webapp_count" {
+  default = "1"
+}
+
+variable "asp_name" {
+  default = "mbwebappasp"
+  
 }
