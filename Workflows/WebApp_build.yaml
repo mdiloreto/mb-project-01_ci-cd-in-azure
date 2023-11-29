@@ -7,17 +7,16 @@
 #
 # You can create these secrets in your GitHub repository's settings under the "Secrets" section.
   
-name: API Recomendador
-
-# on:
-#   push:
-#     branches:
-#       - 'main'
-#       - 'dev'
+name: WebApp Demo
+on:
+  push:
+    branches:
+      - 'main'
+      - 'dev'
 
 env:
-  IMAGE_NAME_main: apirecomendador-main
-  IMAGE_NAME_dev: apirecomendador-dev
+  IMAGE_NAME_main: mbwebapp-main
+  IMAGE_NAME_dev: mbwebapp-dev
 
 jobs:
   build-main:

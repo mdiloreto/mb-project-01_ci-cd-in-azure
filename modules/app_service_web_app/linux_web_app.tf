@@ -3,13 +3,6 @@ resource "random_integer" "ri" {
   max = 99999
 }
 
-# Create Resource Group (you need to use the create_rg cara)
-resource "azurerm_resource_group" "rg" {
-  count    = var.create_rg ? 1 : 0  # Create RG if var.create_rg is true
-  name     = "${var.rg_name}${random_integer.ri.result}"
-  location = var.location
-}
-
 # Create the Linux App Service Plan
 resource "azurerm_service_plan" "appserviceplan" {
   name                = "${var.asp_name}${random_integer.ri.result}"
@@ -21,46 +14,78 @@ resource "azurerm_service_plan" "appserviceplan" {
 
 # Create the web app, pass in the App Service Plan ID
 resource "azurerm_linux_web_app" "webapp" {
-  count = var.webapp_count
   name                  = "${var.webapp_name}${random_integer.ri.result}"
   location              = var.location
   resource_group_name   = var.rg_name
   service_plan_id       = azurerm_service_plan.appserviceplan.id
   https_only            = true
-  site_config { 
+
+  app_settings = {
+    DOCKER_ENABLE_CI          = "true"
+    DOCKER_REGISTRY_SERVER_URL = "https://${var.acr_url}"
+  }
+
+  site_config {
+    container_registry_use_managed_identity = true
     always_on = false  
     minimum_tls_version = "1.2"
-
         cors {
       allowed_origins = [
         "https://portal.azure.com",
       ]
       }
+    application_stack {
+      docker_image     = "${var.acr_url}/${var.docker_image_main}"
+      docker_image_tag = var.docker_image_main_tag
+    }
   }
+    identity {
+    type = "SystemAssigned"
+  }
+
+  storage_account {
+    account_name = var.webapp_sa_acc_name
+    access_key = var.webapp_sa_access_key
+    name = var.webapp_sa_name
+    share_name = var.webapp_sa_share_name_main
+    type = var.webapp_sa_type
+    mount_path = var.webapp_sa_mount_path
+  }
+
 }
 
 resource "azurerm_linux_web_app_slot" "slot_dev" {
-  count = var.webapp_count
 
   name           = "dev"
-  app_service_id = azurerm_linux_web_app.webapp[count.index].id
+  app_service_id = azurerm_linux_web_app.webapp.id
+
+  app_settings = {
+    DOCKER_ENABLE_CI          = "true"
+    DOCKER_REGISTRY_SERVER_URL = "https://${var.acr_url}"
+  }
 
   site_config {
+    container_registry_use_managed_identity = true ## authenticaiton to container registry with SMI
     always_on = false  
     minimum_tls_version = "1.2"
+    application_stack {
+      docker_image     = "${var.acr_url}/${var.docker_image_dev}"
+      docker_image_tag = var.docker_image_dev_tag
+    }
   }
-  depends_on = [ azurerm_linux_web_app.webapp ]
-}
-
-resource "azurerm_linux_web_app_slot" "slot_staging" {
-  count = var.webapp_count
-
-  name           = "staging"
-  app_service_id = azurerm_linux_web_app.webapp[count.index].id
-
-  site_config {
-    always_on = false  
-    minimum_tls_version = "1.2"
+  
+  identity {
+    type = "SystemAssigned"
   }
+
+    storage_account {
+    account_name = var.webapp_sa_acc_name
+    access_key = var.webapp_sa_access_key
+    name = var.webapp_sa_name
+    share_name = var.webapp_sa_share_name_dev
+    type = var.webapp_sa_type
+    mount_path = var.webapp_sa_mount_path
+  }
+
   depends_on = [ azurerm_linux_web_app.webapp ]
 }
