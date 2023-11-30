@@ -96,14 +96,12 @@ module "StorageAccount" {
 
 # >>>>>>> Continous Deployment <<<<<<<<<<<
 
-# >>>>>> NO OLVIDAR INGRESAR LA URL MANUALMENTE EN VARIABLES <<<<<<<
-
 module "WebHook_main" {
   name = "${var.webhook_name}main"
   source = "./modules/acr_webhook"
   rg_name = azurerm_resource_group.cicd-demo_rg.name
   location = var.location
-  service_uri = var.acr_webhook_service_uri_main
+  service_uri = "https://${module.WebApp.webapp_credential_name}:${module.WebApp.webapp_credential_pass}@${module.WebApp.webapp_name}.scm.azurewebsites.net/api/registry/webhook"
   acr_name = module.acr.container_registry_name
   status = var.acr_webhook_status
   scope = var.acr_webhook_scope_main
@@ -117,7 +115,7 @@ module "WebHook_dev" {
   source = "./modules/acr_webhook"
   rg_name = azurerm_resource_group.cicd-demo_rg.name
   location = var.location
-  service_uri = var.acr_webhook_service_uri_dev 
+  service_uri = "https://${module.WebApp.webapp_credential_name_dev}:${module.WebApp.webapp_credential_pass_dev}@${module.WebApp.slot_dev}.scm.azurewebsites.net/api/registry/webhook"
   acr_name = module.acr.container_registry_name
   status = var.acr_webhook_status
   scope = var.acr_webhook_scope_dev

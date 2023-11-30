@@ -6,11 +6,12 @@ terraform {
     }
   }
 }
+
 resource "github_repository" "app_repo" {
   name        = var.repo_name
   description = var.description
   visibility = "public"
-  auto_init = true
+  # auto_init = true
 }
 
 resource "null_resource" "init_repo" {
@@ -22,48 +23,44 @@ resource "null_resource" "init_repo" {
 
 provisioner "local-exec" {
     command = <<EOT
-      $sourceDir = "C:\nginx_app"
-      $repoDir = "C:\Users\mdiloreto\app"
-      $repoUrl = "https://github.com/mdiloreto/app"
-    
-      if(Test-Path -Path $repoDir) {
-        Write-Host "The path exists."
-      }
-      else {
-      # Clone the repo if it doesn't already exist
-      if (-Not (Test-Path $repoDir)) {
-        Write-Host "Cloning the repo from $repoUrl" -ForegroundColor Red
-        git clone $repoUrl $repoDir
-      } else {
-        Write-Host "Repo already cloned at $repoDir" -ForegroundColor Green
-      }
+    if (-not (Test-Path -Path "C:\tmp")) {
+        New-Item -Path "C:\tmp" -ItemType Directory
+        Write-Host "Directory 'C:\tmp' created."
+    } else {
+        Write-Host "Directory 'C:\tmp' already exists."
+    }
 
-      # Change to the repository directory
-      cd $repoDir
+    $currentPath = "C:\\tmp"
 
-      # Pull the latest changes
-      git pull
+    # Check if the /app directory exists
+    if (Test-Path -Path "$currentPath\\app") {
+        Write-Host "The /app directory exists in the current path."
+    } else {
+        # Define repository paths
+        $mbNgnixDockerImagePath = "$currentPath\\mb-ngnix-docker-image"
+        $appRepoPath = "$currentPath\\app"
 
-      # Check if there are any files to copy
-      $filesToCopy = Get-ChildItem $sourceDir -Recurse
-      if ($filesToCopy.Count -eq 0) {
-        Write-Host "No new files to copy from $sourceDir" -ForegroundColor Green
-      } else {
-        # Copy all files from source directory to repository
-        Write-Host "Copying files from $sourceDir to $repoDir" -ForegroundColor Yellow
-        Copy-Item -Path "$sourceDir\\*" -Destination $repoDir -Recurse -Force
-
-        # Add all files to git, commit, and push if there are changes
+        # Clone the mb-ngnix-docker-image repo
+        git clone "https://github.com/mdiloreto/mb-ngnix-docker-image" "$mbNgnixDockerImagePath"
+        # Clone the app repo
+        git clone "https://github.com/mdiloreto/app" "$appRepoPath"
+        
+        # Copy files from mb-ngnix-docker-image to app
+        Write-Host "Copying files from /mb-ngnix-docker-image to /app" -ForegroundColor Yellow
+        Copy-Item -Path "$mbNgnixDockerImagePath\\*" -Destination "$appRepoPath" -Recurse
+        
+        # Commit and push changes to the app repo
+        cd $appRepoPath
         git add .
-        $status = git status --porcelain
-        if ($status) {
-          git commit -m "Copy nginx_app files"
-          git push
-        } else {
-          Write-Host "No changes to commit" -ForegroundColor Green
+        git commit -m "Copy content from mb-ngnix-docker-image repo"
+        git push
+
+        # Change directory back to a safe location before removing directories
+        cd $currentPath
+
+        # Remove cloned repositories from the current path
+        Remove-Item -Path $mbNgnixDockerImagePath -Recurse -Force
         }
-      }
-      }
     EOT
     interpreter = ["PowerShell", "-Command"]
   }
