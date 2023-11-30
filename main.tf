@@ -7,6 +7,8 @@ module "github_repos" {
   source = "./modules/github_repo"
 }
 
+# >>>>>>>> Cloud Infra in Azure <<<<<<<<<<<<<<<<<
+
 resource "azurerm_resource_group" "cicd-demo_rg" {
   name     = "${var.rg_name}${random_integer.ri.result}"
   location = var.location
@@ -60,6 +62,7 @@ module "role_assign_webapp-acr" {
 
 module "role_assign_webapp_dev-acr" {
   source       = "./modules/role_assignment"
+
   scope        = module.acr.acr_id
   principal_id = module.WebApp.managed_identity_ids_dev # For dev slot
   role         = var.role_assing_acr
@@ -71,7 +74,7 @@ module "role_assign_webapp_dev-acr" {
 module "role_assign_webapp-sa" {
   source       = "./modules/role_assignment"
   scope        = module.StorageAccount.storage_account_id
-  principal_id = module.WebApp.managed_identity_ids     # For main web app
+  principal_id = module.WebApp.managed_identity_ids # For main web app
   role         = var.role_assing_sa
 
   depends_on = [module.WebApp]
@@ -85,7 +88,6 @@ module "role_assign_webapp_dev-sa" {
 
   depends_on = [module.WebApp]
 }
-
 
 
 module "StorageAccount" {
@@ -108,7 +110,6 @@ module "WebHook_main" {
   action = var.acr_webhook_action
 }
 
-# >>>>>> NO OLVIDAR INGRESAR LA URL MANUALMENTE EN VARIABLES <<<<<<<
 
 module "WebHook_dev" {
   name = "${var.webhook_name}dev"
