@@ -96,6 +96,8 @@ module "StorageAccount" {
 
 # >>>>>>> Continous Deployment <<<<<<<<<<<
 
+# >>>>>> NO OLVIDAR INGRESAR LA URL MANUALMENTE EN VARIABLES <<<<<<<
+
 module "WebHook_main" {
   name = "${var.webhook_name}main"
   source = "./modules/acr_webhook"
@@ -108,6 +110,7 @@ module "WebHook_main" {
   action = var.acr_webhook_action
 }
 
+# >>>>>> NO OLVIDAR INGRESAR LA URL MANUALMENTE EN VARIABLES <<<<<<<
 
 module "WebHook_dev" {
   name = "${var.webhook_name}dev"
