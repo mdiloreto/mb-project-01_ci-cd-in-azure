@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "github" {
-  token = var.token
+  # token = var.token
   # app_auth {
 
   #   # id              = ar.github_app_id  # or `GITHUB_APP_ID`
