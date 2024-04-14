@@ -12,6 +12,23 @@ resource "github_repository" "app_repo" {
   description = var.description
   visibility = "public"
   # auto_init = true
+
+  security_and_analysis {
+    # advanced_security {
+    #   status = "enabled"
+    # }
+    secret_scanning {
+      status = "enabled"
+    }
+    secret_scanning_push_protection {
+      status = "enabled"
+    }
+  }
+
+    # Vulnerability alerts and other settings
+  vulnerability_alerts = true
+  topics                = ["terraform", "security", "example"]
+  
 }
 
 resource "null_resource" "init_repo" {
@@ -76,4 +93,5 @@ resource "github_branch" "dev" {
   depends_on = [
     null_resource.init_repo
   ]
+
 }

@@ -1,6 +1,6 @@
 # variable "github_app_id" {}
 # variable "github_installation_id" {}
-variable "token" {}
+# variable "token" {}
 variable "rg_name" {}
 variable "webapp_name" {}
 variable "location" {}
