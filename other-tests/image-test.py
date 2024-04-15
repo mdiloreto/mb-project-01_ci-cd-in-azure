@@ -3,36 +3,38 @@ import requests
 import os
 import re
 
-def extract_url_from_style(style):
-    try:
-        if style:
-            match = re.search(r'url\(["\']?(.*?)["\']?\)', style)
-            if match:
-                return match.group(1)
-    except Exception as e:
-        print(f"Error extracting URL from style: {e}")
+
+def extract_css_from_style_tags(html_content):
+    """ Extract CSS from <style> tags. """
+    soup = BeautifulSoup(html_content, 'html.parser')
+    style_tags = soup.find_all('style')
+    css_text = '\n'.join(style_tag.get_text() for style_tag in style_tags)
+    return css_text
+
+def find_background_image_in_css(css_text, class_name):
+    """ Find background image URL from CSS text for a given class name. """
+    pattern = re.compile(r'\.' + re.escape(class_name) + r'\s*\{[^\}]*background-image:\s*url\(["\']?(.+?)["\']?\);?[^\}]*\}', re.DOTALL)
+    match = pattern.search(css_text)
+    if match:
+        return match.group(1)
     return None
 
-def get_image_urls(url):
+def get_image_url_from_webpage(url, class_name):
+    """ Get the image URL from a webpage by class name. """
     try:
-        # Send an HTTP GET request to the specified URL
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for HTTP errors
         html_content = response.text
+        
+        # Extract CSS from <style> tags
+        css_text = extract_css_from_style_tags(html_content)
+        
+        # Find background image URL in CSS
+        image_url = find_background_image_in_css(css_text, class_name)
+        return image_url
     except requests.RequestException as e:
         print(f"Error fetching HTML content: {e}")
-        return []
-
-    soup = BeautifulSoup(html_content, 'html.parser')
-    urls = []
-
-    # Check all elements for background-image
-    for element in soup.find_all(style=True):
-        background_image = extract_url_from_style(element['style'])
-        if background_image:
-            urls.append(background_image)
-
-    return urls
+        return None
 
 def classify_image_urls(image_urls):
     local_images, internet_images = [], []
@@ -62,17 +64,23 @@ def test_local_images(local_images, base_path):
     return results
 
 if __name__ == "__main__":
-    url = 'http://localhost/'  # Update this URL to match the hosted HTML
+    url = 'http://localhost:8080/'  # URL to fetch
     print(f"Testing images at URL: {url}")
-    image_urls = get_image_urls(url)
-    print(f"Found {len(image_urls)} images to test.")
-    local_images, internet_images = classify_image_urls(image_urls)
-    print(f"{len(internet_images)} internet images and {len(local_images)} local images classified.")
+    class_name = 'banner-image'  # Class name to search for
+    
+    image_url = get_image_url_from_webpage(url, class_name)
+    
+    if image_url:
+        print(f"Found image URL: {image_url}")
+        local_images, internet_images = classify_image_urls([image_url])
+        print(f"{len(internet_images)} internet images and {len(local_images)} local images classified.")
 
-    internet_results = test_internet_images(internet_images)
-    for url, is_accessible in internet_results.items():
-        print(f"Internet image {url} accessible: {is_accessible}")
+        internet_results = test_internet_images(internet_images)
+        for url, is_accessible in internet_results.items():
+            print(f"Internet image {url} accessible: {is_accessible}")
 
-    local_results = test_local_images(local_images, url)
-    for image, exists in local_results.items():
-        print(f"Local image {image} exists: {exists}")
+        local_results = test_local_images(local_images, os.path.dirname(url))
+        for image, exists in local_results.items():
+            print(f"Local image {image} exists: {exists}")
+    else:
+        print("No image URL found.")
