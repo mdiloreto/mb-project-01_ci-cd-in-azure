@@ -4,7 +4,7 @@ This repo is intented for developing a CI/CD in Azure using Terraform, GitHub Ac
 
 # Cómo utilizar el Escenario de Laboratorio: 
 
-    1. Crear el Remote State. 
+    1. Crear el Remote State.   
     2. Configurar datos de Remote state en Backend.tf. 
     3. Login az:
         a. az login -t "<tenant-id>" --use-device-login
