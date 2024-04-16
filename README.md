@@ -34,12 +34,12 @@ This repository contains the Terraform configuration for deploying a scalable an
 6. Run Terraform apply.
 7. Configure Secrets for Actions:
    - Use the Output.
-    - AZURE_CLIENT_ID: The Azure Service Principal's Application (client) ID. It is used for authenticating with the Azure Container Registry.
-    - AZURE_ACR_ENDPOINT: The login server name of your Azure Container Registry. This is the URL where the Docker images will be pushed to.
+    - `AZURE_CLIENT_ID`: The Azure Service Principal's Application (client) ID. It is used for authenticating with the Azure Container Registry.
+    - `AZURE_ACR_ENDPOINT`: The login server name of your Azure Container Registry. This is the URL where the Docker images will be pushed to.
 8. Configure the Secret in App Registration "github_sp".
 9. Set Secrets for Actions:
    - Use the secret created in step 8.
-   - AZURE_CLIENT_SECRET: The Azure Service Principal's Secret. It is used along with the AZURE_CLIENT_ID for authentication.
+   - `AZURE_CLIENT_SECRET`: The Azure Service Principal's Secret. It is used along with the AZURE_CLIENT_ID for authentication.
 10. Create a base file `.github/workflows/build.yaml`.
 11. Load files into the Storage account:
     - Use files from the folder `sa_images`, `dev.png` and `main.png`.
