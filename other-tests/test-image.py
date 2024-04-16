@@ -64,7 +64,7 @@ def test_local_images(local_images, base_path):
     return results
 
 if __name__ == "__main__":
-    url = 'http://localhost:8080/'  # URL to fetch
+    url = 'http://localhost:80/'  # URL to fetch
     print(f"Testing images at URL: {url}")
     class_name = 'banner-image'  # Class name to search for
     

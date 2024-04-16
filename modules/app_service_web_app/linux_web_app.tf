@@ -27,7 +27,7 @@ resource "azurerm_linux_web_app" "webapp" {
 
   site_config {
     container_registry_use_managed_identity = true
-    always_on = false  
+    always_on = true  
     minimum_tls_version = "1.2"
         cors {
       allowed_origins = [
@@ -66,7 +66,7 @@ resource "azurerm_linux_web_app_slot" "slot_dev" {
 
   site_config {
     container_registry_use_managed_identity = true ## authenticaiton to container registry with SMI
-    always_on = false  
+    always_on = true  
     minimum_tls_version = "1.2"
     application_stack {
       docker_image     = "${var.acr_url}/${var.docker_image_dev}"
