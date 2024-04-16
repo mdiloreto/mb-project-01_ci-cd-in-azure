@@ -20,7 +20,7 @@ module "acr" {
   source = "./modules/acr"
 
   rg_name = azurerm_resource_group.cicd-demo_rg.name
-  name    = "${var.acr_name}${random_integer.ri.result}"
+  name    = var.acr_name
 }
 
 # Module to create a service principal for app authentication
