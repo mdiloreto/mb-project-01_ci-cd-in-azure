@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    github = {
-      source = "integrations/github"
-      version = ">= 5.42.0"
-    }
-  }
-}
-
 resource "github_repository" "app_repo" {
   name        = var.repo_name
   description = var.description
@@ -54,22 +45,22 @@ provisioner "local-exec" {
         Write-Host "The /app directory exists in the current path."
     } else {
         # Define repository paths
-        $mbNgnixDockerImagePath = "$currentPath\\mb-ngnix-docker-image"
+        $mbNgnixDockerImagePath = "$currentPath\\mb-flask-web-app"
         $appRepoPath = "$currentPath\\app"
 
-        # Clone the mb-ngnix-docker-image repo
-        git clone "https://github.com/mdiloreto/mb-ngnix-docker-image" "$mbNgnixDockerImagePath"
+        # Clone the mb-flask-web-app repo
+        git clone https://github.com/mdiloreto/mb-flask-web-app" "$mbNgnixDockerImagePath"
         # Clone the app repo
         git clone "https://github.com/mdiloreto/app" "$appRepoPath"
         
-        # Copy files from mb-ngnix-docker-image to app
-        Write-Host "Copying files from /mb-ngnix-docker-image to /app" -ForegroundColor Yellow
+        # Copy files from mb-flask-web-app to app
+        Write-Host "Copying files from /mb-flask-web-app to /app" -ForegroundColor Yellow
         Copy-Item -Path "$mbNgnixDockerImagePath\\*" -Destination "$appRepoPath" -Recurse
         
         # Commit and push changes to the app repo
         cd $appRepoPath
         git add .
-        git commit -m "Copy content from mb-ngnix-docker-image repo"
+        git commit -m "Copy content from mb-flask-web-app repo"
         git push
 
         # Change directory back to a safe location before removing directories

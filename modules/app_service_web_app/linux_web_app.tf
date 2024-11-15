@@ -35,8 +35,7 @@ resource "azurerm_linux_web_app" "webapp" {
       ]
       }
     application_stack {
-      docker_image     = "${var.acr_url}/${var.docker_image_main}"
-      docker_image_tag = var.docker_image_main_tag
+      docker_image_name     = "${var.acr_url}/${var.docker_image_main}:${var.docker_image_main_tag}"
     }
   }
     identity {
@@ -69,8 +68,7 @@ resource "azurerm_linux_web_app_slot" "slot_dev" {
     always_on = true  
     minimum_tls_version = "1.2"
     application_stack {
-      docker_image     = "${var.acr_url}/${var.docker_image_dev}"
-      docker_image_tag = var.docker_image_dev_tag
+      docker_image_name     = "${var.acr_url}/${var.docker_image_dev}:${var.docker_image_dev_tag}"
     }
   }
   

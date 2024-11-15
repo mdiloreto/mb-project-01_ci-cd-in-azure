@@ -2,14 +2,14 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0.0"
+      version = "~> 4.0.0"
     }
     github = {
       source  = "integrations/github"
-      version = "~> 5.42.0"
+      version = "> 6.0.0"
     }
   }
-  required_version = ">= 0.14.9"
+  required_version = ">= 1.5.9"
 }
 
 provider "github" {
@@ -29,4 +29,5 @@ provider "azurerm" {
       recover_soft_deleted_key_vaults = true
     }
   }
+  subscription_id = var.subscription_id
 }
