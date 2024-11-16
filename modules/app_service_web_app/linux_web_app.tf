@@ -20,6 +20,10 @@ resource "azurerm_linux_web_app" "webapp" {
   service_plan_id       = azurerm_service_plan.appserviceplan.id
   https_only            = true
 
+  app_settings = {
+    DOCKER_ENABLE_CI = "true" # This setting enables Continous Deployment in the App Service Web App 
+  }
+
   site_config {
     container_registry_use_managed_identity = true
     always_on = true  
@@ -30,7 +34,7 @@ resource "azurerm_linux_web_app" "webapp" {
       ]
       }
     application_stack {
-      docker_image_name     = "${var.acr_url}/${var.docker_image_main}:${var.docker_image_main_tag}"
+      docker_image_name     = "${var.docker_image_main}:${var.docker_image_main_tag}"
       docker_registry_url   = "https://${var.acr_url}"
     }
   }
@@ -59,11 +63,13 @@ resource "azurerm_linux_web_app_slot" "slot_dev" {
     always_on = true  
     minimum_tls_version = "1.2"
     application_stack {
-      docker_image_name     = "${var.acr_url}/${var.docker_image_dev}:${var.docker_image_dev_tag}"
+      docker_image_name     = "${var.docker_image_dev}:${var.docker_image_dev_tag}"
       docker_registry_url   = "https://${var.acr_url}"
     }
   }
-  
+  app_settings = {
+    DOCKER_ENABLE_CI = "true" # This setting enables Continous Deployment in the App Service Web App
+  }
   identity {
     type = "SystemAssigned"
   }
