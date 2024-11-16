@@ -25,6 +25,7 @@ resource "github_repository" "app_repo" {
 resource "null_resource" "init_repo" {
   triggers = {
     always_run = "${timestamp()}"
+    
   }
 
  # >>>>>>>>>> Init the repo <<<<<<<<<<<<<<
@@ -38,24 +39,24 @@ provisioner "local-exec" {
         Write-Host "Directory 'C:\tmp' already exists."
     }
 
-    $currentPath = "C:\\tmp"
+    $currentPath = "C:/tmp"
 
     # Check if the /app directory exists
-    if (Test-Path -Path "$currentPath\\app") {
+    if (Test-Path -Path "$currentPath/app") {
         Write-Host "The /app directory exists in the current path."
     } else {
         # Define repository paths
-        $mbNgnixDockerImagePath = "$currentPath\\mb-flask-web-app"
-        $appRepoPath = "$currentPath\\app"
+        $mbNgnixDockerImagePath = "$currentPath/mb-flask-web-app"
+        $appRepoPath = "$currentPath/app"
 
         # Clone the mb-flask-web-app repo
-        git clone https://github.com/mdiloreto/mb-flask-web-app" "$mbNgnixDockerImagePath"
+        git clone https://github.com/mdiloreto/mb-flask-web-app "$mbNgnixDockerImagePath"
         # Clone the app repo
         git clone "https://github.com/mdiloreto/app" "$appRepoPath"
         
         # Copy files from mb-flask-web-app to app
         Write-Host "Copying files from /mb-flask-web-app to /app" -ForegroundColor Yellow
-        Copy-Item -Path "$mbNgnixDockerImagePath\\*" -Destination "$appRepoPath" -Recurse
+        Copy-Item -Path "$mbNgnixDockerImagePath/*" -Destination "$appRepoPath" -Recurse
         
         # Commit and push changes to the app repo
         cd $appRepoPath
@@ -71,7 +72,18 @@ provisioner "local-exec" {
         }
     EOT
     interpreter = ["PowerShell", "-Command"]
+    
   }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOT
+        Remove-Item -Path C:\tmp -Recurse -Force 
+        Write-host 'c:/tmp repo cleaned up' -ForegroundColor Red
+    EOT
+    interpreter = ["PowerShell", "-Command"]
+  }
+
   depends_on = [ github_repository.app_repo ]
 }
 

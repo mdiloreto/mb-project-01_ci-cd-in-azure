@@ -4,7 +4,7 @@ output "client_id" {
 }
 
 output "principal_id" {
-  value = azuread_service_principal.aad_app_sp.id
+  value = azuread_service_principal.aad_app_sp.object_id
 }
 
 output "azure_client_secret" {
