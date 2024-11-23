@@ -9,11 +9,16 @@ on:
 env:
   IMAGE_NAME_main: mbwebapp-main
   IMAGE_NAME_dev: mbwebapp-dev
+  TEST_AZURE_ENDPOINT: ${{ secrets.TEST_AZURE_ENDPOINT }}
+  TEST_AZURE_CREDENTIALS: ${{ secrets.TEST_AZURE_CREDENTIALS }}
+  TEST_ENDPOINT: ${{ vars.TEST_ENDPOINT }}
+  TEST_URL: ${{ vars.TEST_URL }}
 
 jobs:
   unit-test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # Allow up to 15 minutes for this job
 
     steps:
       - name: Checkout repository
@@ -28,7 +33,7 @@ jobs:
         run: docker build --build-arg FLASK_OUTPUT_DIR=$FLASK_OUTPUT_DIR -t ${{ env.IMAGE_NAME_main }} .
 
       - name: Run Docker Container
-        run: docker run -d --name ${{ env.IMAGE_NAME_main }} -p 80:80 ${{ env.IMAGE_NAME_main }}
+        run: docker run -d --name ${{ env.IMAGE_NAME_main }} -p 5000:5000 ${{ env.IMAGE_NAME_main }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -39,6 +44,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r ./tests/requirements.txt
+
+      - name: Debug Environment Variables
+        run: |
+            echo "TEST_ENDPOINT=$TEST_ENDPOINT"
+            echo "TEST_URL=$TEST_URL"
+            echo "TEST_AZURE_ENDPOINT=$TEST_AZURE_ENDPOINT"
+            echo "TEST_AZURE_CREDENTIALS=$TEST_AZURE_CREDENTIALS"
 
       - name: Run Unit Tests
         run: pytest ./tests
@@ -71,8 +83,8 @@ jobs:
           tags: |
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_main }}:${{ github.sha }}
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_main }}:latest
-        build-args: 
-          FLASK_OUTPUT_DIR: /home 
+          build-args: |
+            FLASK_OUTPUT_DIR: /home 
 
   build-dev:
     name: Build-dev
@@ -99,5 +111,5 @@ jobs:
           tags: |
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_dev }}:${{ github.sha }}
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_dev }}:latest
-        build-args: 
-          FLASK_OUTPUT_DIR: /home 
+          build-args: |
+            FLASK_OUTPUT_DIR: /home 
