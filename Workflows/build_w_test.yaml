@@ -13,6 +13,7 @@ env:
   TEST_AZURE_CREDENTIALS: ${{ secrets.TEST_AZURE_CREDENTIALS }}
   TEST_ENDPOINT: ${{ vars.TEST_ENDPOINT }}
   TEST_URL: ${{ vars.TEST_URL }}
+  FLASK_OUTPUT_DIR: ${{ vars.FLASK_OUTPUT_DIR }}
 
 jobs:
   unit-test:
@@ -84,7 +85,7 @@ jobs:
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_main }}:${{ github.sha }}
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_main }}:latest
           build-args: |
-            FLASK_OUTPUT_DIR: /home 
+            FLASK_OUTPUT_DIR=$FLASK_OUTPUT_DIR
 
   build-dev:
     name: Build-dev
@@ -112,4 +113,4 @@ jobs:
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_dev }}:${{ github.sha }}
             ${{ secrets.AZURE_ACR_ENDPOINT }}/${{ env.IMAGE_NAME_dev }}:latest
           build-args: |
-            FLASK_OUTPUT_DIR: /home 
+            FLASK_OUTPUT_DIR=$FLASK_OUTPUT_DIR
