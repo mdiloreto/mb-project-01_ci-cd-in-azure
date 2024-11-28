@@ -52,6 +52,7 @@ jobs:
             echo "TEST_URL=$TEST_URL"
             echo "TEST_AZURE_ENDPOINT=$TEST_AZURE_ENDPOINT"
             echo "TEST_AZURE_CREDENTIALS=$TEST_AZURE_CREDENTIALS"
+            echo "FLASK_OUTPUT_DIR=$FLASK_OUTPUT_DIR"
 
       - name: Run Unit Tests
         run: pytest ./tests
