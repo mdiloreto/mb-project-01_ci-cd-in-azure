@@ -1,16 +1,30 @@
 #!/bin/bash
-response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80)
-if [ "$response" -eq 200 ]; then
-  echo "HTTP status test passed!"
-else
-  echo "HTTP status test failed!"
-  exit 1
-fi
 
-content=$(curl -s http://localhost:80)
-if [[ "$content" == *"Hello and welcome to MadsBlog test site!"* ]]; then
-  echo "Content test passed!"
-else
-  echo "Content test failed!"
-  exit 1
-fi
+# Variables
+BASE_URL="api/translate"
+CONTENT_TYPE="application/json"
+TRANSLATOR_API="azure"
+AZURE_ENDPOINT="https://api.cognitive.microsofttranslator.com/"
+AZURE_CREDENTIALS=""
+TEST_URL="https://madsblog.net/2024/10/29/kubernetes-networking-parte-2/"
+LOOP_COUNT=10  # Number of requests to send
+DELAY=1  # Delay in seconds between requests
+
+# Loop to send traffic
+for ((i=1; i<=LOOP_COUNT; i++)); do
+  echo "Sending request $i to $BASE_URL"
+  
+  curl -i -w '\n' -X POST "$BASE_URL" \
+    -H "Content-Type: $CONTENT_TYPE" \
+    -d '{
+      "url": "'"$TEST_URL"'",
+      "translator_api": "'"$TRANSLATOR_API"'",
+      "azure_endpoint": "'"$AZURE_ENDPOINT"'",
+      "azure_credentials": "'"$AZURE_CREDENTIALS"'"
+    }'
+  
+  echo "Request $i sent."
+  
+  # Delay between requests
+  sleep $DELAY
+done
