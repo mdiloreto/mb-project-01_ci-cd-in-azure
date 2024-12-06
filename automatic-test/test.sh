@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-BASE_URL="api/translate"
+BASE_URL=""
 CONTENT_TYPE="application/json"
 TRANSLATOR_API="azure"
 AZURE_ENDPOINT="https://api.cognitive.microsofttranslator.com/"
