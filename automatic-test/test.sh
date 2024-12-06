@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Variables
-BASE_URL="http://mb-webapp34284-dev.azurewebsites.net/api/translate"
+BASE_URL=""
 CONTENT_TYPE="application/json"
 TRANSLATOR_API="azure"
 AZURE_ENDPOINT="https://api.cognitive.microsofttranslator.com/"
-AZURE_CREDENTIALS="bccaadcc92794b6994ae0baa9"
+AZURE_CREDENTIALS=""
 TEST_URL="https://madsblog.net/2024/10/29/kubernetes-networking-parte-2/"
 LOOP_COUNT=10  # Number of requests to send
 DELAY=1  # Delay in seconds between requests
